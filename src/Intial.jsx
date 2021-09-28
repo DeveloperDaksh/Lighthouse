@@ -19,8 +19,19 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { color } from "@mui/system";
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
+import CircularProgress from '@mui/material/CircularProgress';
+
+import InputBase from '@mui/material/InputBase';
+// import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+// import MenuIcon from '@mui/icons-material/Menu';
+import SearchIcon from '@mui/icons-material/Search';
+// import DirectionsIcon from '@mui/icons-material/Directions';
+
+
+
+function createData(name, main) {
+  return { name, main };
 }
 function createData2(value) {
   return { value };
@@ -28,13 +39,14 @@ function createData2(value) {
 function cgs(value) {
   return { value };
 }
-var count = 0;
-var count2 = 0;
+
+// var count = 0;
+// var count2 = 0;
 const rows = [
-  createData('CUMULATIVE_LAYOUT_SHIFT_SCORE', 159, 6.0, 24, 4.0),
-  createData('FIRST_CONTENTFUL_PAINT_MS', 237, 9.0, 37, 4.3),
-  createData('FIRST_INPUT_DELAY_MS', 262, 16.0, 24, 6.0),
-  createData('LARGEST_CONTENTFUL_PAINT_MS', 305, 3.7, 67, 4.3),
+  createData('CUMULATIVE_LAYOUT_SHIFT_SCORE', "Cumulative Layout Shift Score"),
+  createData('FIRST_CONTENTFUL_PAINT_MS', "First Contentful Paint MS"),
+  createData('FIRST_INPUT_DELAY_MS', "First Input Delay MS"),
+  createData('LARGEST_CONTENTFUL_PAINT_MS', "Largest Contentful Paint MS"),
 ];
 const content = [
   createData2("mainthread-work-breakdown"), createData2("performance-budget"), createData2("uses-responsive-images"), createData2("offscreen-images"), createData2("screenshot-thumbnails"), createData2("total-blocking-time"), createData2("font-display"), createData2("diagnostics"), createData2("interactive"), createData2("uses-rel-preload"), createData2("resource-summary"), createData2("critical-request-chains"), createData2("timing-budget"), createData2("uses-passive-event-listeners"), createData2("third-party-facades"),
@@ -52,10 +64,11 @@ const cg = [
   •
 </Box>
 
-
+// var progress = null;
 
 const Intial = () => {
   const [url, setUrl] = useState(null) // for url
+  const [progress, Setprogress] = useState("false");
   function setUpQuery(val) { //function creates the full url for api call
     const api = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';//First part of the url
     const parameters = {
@@ -69,7 +82,170 @@ const Intial = () => {
   }
   var datam = [];
   const [data, setdata] = useState([]);//set data from api
+  const BBox = () => {
+    if (data.loadingExperience == undefined) {
+      console.log("We reach here");
+      return (<div>
+        <Box style={{ margin: "auto", padding: "52px", marginLeft: "680px" }} sx={{ display: 'flex' }}>
+          <CircularProgress />
+        </Box>
+      </div>);
+    }
+    else {
+      return (<div>
+
+
+
+        <div >
+          <TableContainer style={{ width: "1200px", margin: "auto", border: "0.1px solid lightgrey" }} component={Paper}>
+            <Table sx={{ minWidth: 100 }} aria-label="simple table">
+              <TableHead>
+                <TableRow >
+                  <TableCell style={{ textAlign: "center", fontWeight: "bold" }}>Metrics</TableCell>
+                  <TableCell style={{ textAlign: "center", fontWeight: "bold" }} align="right">Percentile</TableCell>
+                  <TableCell style={{ textAlign: "center", fontWeight: "bold" }} align="right">Minimum</TableCell>
+                  <TableCell style={{ textAlign: "center", fontWeight: "bold" }} align="right">Maximum</TableCell>
+                  <TableCell style={{ textAlign: "center", fontWeight: "bold" }} align="right">Proportion</TableCell>
+
+                  {/* <TableCell align="right">Protein&nbsp;(g)</TableCell> */}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {console.log("cnbn", JSON.stringify(data.loadingExperience))}
+                {rows.map((d) => (
+                  <TableRow
+                    key={d.name}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  >
+                    <TableCell style={{ textAlign: "center" }} component="th" scope="row">
+
+                      {d.main}
+                    </TableCell>
+                    <TableCell style={{ textAlign: "center" }} align="right">{JSON.stringify(data.loadingExperience) == undefined ? "loading" : JSON.stringify(data.loadingExperience.metrics[d.name].percentile)}</TableCell>
+                    <TableCell style={{ textAlign: "center" }} align="right">{JSON.stringify(data.loadingExperience) == undefined ? "loading" : JSON.stringify(data.loadingExperience.metrics[d.name].distributions[0].min)}, {JSON.stringify(data.loadingExperience) == undefined ? "" : JSON.stringify(data.loadingExperience.metrics[d.name].distributions[1].min)},{JSON.stringify(data.loadingExperience) == undefined ? "" : JSON.stringify(data.loadingExperience.metrics[d.name].distributions[2].min)}</TableCell>
+                    <TableCell style={{ textAlign: "center" }} align="right">{JSON.stringify(data.loadingExperience) == undefined ? "loading" : JSON.stringify(data.loadingExperience.metrics[d.name].distributions[0].max)}, {JSON.stringify(data.loadingExperience) == undefined ? "" : JSON.stringify(data.loadingExperience.metrics[d.name].distributions[1].max)}</TableCell>
+                    <TableCell style={{ textAlign: "center" }} align="right">{JSON.stringify(data.loadingExperience) == undefined ? "loading" : JSON.stringify(data.loadingExperience.metrics[d.name].distributions[0].proportion)},<br />{JSON.stringify(data.loadingExperience) == undefined ? "" : JSON.stringify(data.loadingExperience.metrics[d.name].distributions[1].proportion)} ,<br />{JSON.stringify(data.loadingExperience) == undefined ? "" : JSON.stringify(data.loadingExperience.metrics[d.name].distributions[2].proportion)}</TableCell>
+                    {/* <TableCell align="right">{datam.loadingExperience.metrics["CUMULATIVE_LAYOUT_SHIFT_SCORE"].distributions[0].max}, {data.loadingExperience.metrics[d.name].distributions[1].max}</TableCell> */}
+                    {/* <TableCell align="right">{datam.loadingExperience.metrics["CUMULATIVE_LAYOUT_SHIFT_SCORE"].distributions[0].proportion}, {data.loadingExperience.metrics[d.name].distributions[1].proportion} , {data.loadingExperience.metrics[d.name].distributions[2].proportion}</TableCell> */}
+                    {/* <TableCell align="right">{row.fat}</TableCell>
+      <TableCell align="right">{row.carbs}</TableCell>
+      <TableCell align="right">{row.protein}</TableCell> */}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </div>
+
+
+
+
+        <div style={{ padding: "32px" }}>
+          <Card style={{ marginLeft: "80px", border: "0.5px solid lightgrey", margin: "auto" }} sx={{ maxWidth: 1198 }}>
+            {/* {data.lighthouseResult == undefined ? "loading.." : console.log("audits", data.lighthouseResult.audits)} */}
+            <CardContent>
+              <Typography gutterBottom variant="h5" component="div">
+                {data.loadingExperience == undefined ? "" : " Light House Result"}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                <b>{data.loadingExperience == undefined ? "" : "User Agent:"} </b> {data.loadingExperience == undefined ? "" : data.lighthouseResult.userAgent} <br />
+                <b>{data.loadingExperience == undefined ? "" : "Fetch Time:"} </b>{data.loadingExperience == undefined ? "" : data.lighthouseResult.fetchTime} <br />
+                <b>{data.loadingExperience == undefined ? "" : "Warnings:"}</b>{data.loadingExperience == undefined ? "" : data.lighthouseResult.runWarnings} <br />
+
+                <h2>{data.loadingExperience == undefined ? "Loading..." : "Audits"}</h2>
+
+                {content.map((val) => (
+                  <div>
+                    <b style={{ textTransform: "uppercase" }}><h4>{data.loadingExperience == undefined ? "" : val.value}</h4></b>
+                    <b>{data.loadingExperience == undefined ? "" : "Title :"} </b>{data.loadingExperience == undefined ? "" : data.lighthouseResult.audits[val.value].title} <br />
+                    <b>{data.loadingExperience == undefined ? "" : "Description :"} </b>{data.loadingExperience == undefined ? "" : data.lighthouseResult.audits[val.value].description} <br />
+                    <b>{data.loadingExperience == undefined ? "" : "Score :"} </b>{data.loadingExperience == undefined ? "" : (data.lighthouseResult.audits[val.value].score == null ? "null" : data.lighthouseResult.audits[val.value].score)} <br />
+                    <b>{data.loadingExperience == undefined ? "" : "Score Display Mode :"} </b>{data.loadingExperience == undefined ? "" : data.lighthouseResult.audits[val.value].scoreDisplayMode} <br />
+                    <b>{data.loadingExperience == undefined ? "" : "Display Value :"} </b>{data.loadingExperience == undefined ? "" : data.lighthouseResult.audits[val.value].displayValue == null ? "null" : data.lighthouseResult.audits[val.value].displayValue} <br />
+                  </div>
+                ))}
+
+              </Typography>
+            </CardContent>
+
+          </Card>
+        </div>
+
+        <div style={{ padding: "2px" }}>
+          <Card style={{ marginLeft: "80px", marginTop: "42px", border: "0.5px solid lightgrey", margin: "auto" }} sx={{ maxWidth: 1195 }}>
+            {data.lighthouseResult == undefined ? "loading.." : console.log("audits", data.lighthouseResult.audits)}
+            <CardContent>
+              <Typography style={{ textAlign: "center" }} gutterBottom variant="h5" component="div">
+                Categories
+              </Typography>
+              <h2 style={{ marginLeft: "30px" }}>{data.loadingExperience == undefined ? "Loading..." : "Performance"}</h2>
+              <Typography variant="body2" color="text.secondary">
+                <b>Id: </b> {data.loadingExperience == undefined ? "loading..." : data.lighthouseResult.categories.performance.id} <br />
+                <b>Title: </b>{data.loadingExperience == undefined ? "loading..." : data.lighthouseResult.categories.performance.title} <br />
+                <b>Score: </b>{data.loadingExperience == undefined ? "loading..." : data.lighthouseResult.categories.performance.score} <br /> <br />
+
+                <h3>{data.loadingExperience == undefined ? "Loading..." : "Audit"}</h3>
+
+                {data.lighthouseResult == undefined ? "loading..." : data.lighthouseResult.categories.performance.auditRefs.map((val) => (
+                  <div>
+                    {/* <b>{++count}</b> */}
+                    <div style={{ marginLeft: "12px" }}>
+                      {/* <b style={{ textTransform: "uppercase" }}><h4>{data.loadingExperience == undefined ? "" : val.value}</h4></b> */}
+                      <b>{data.loadingExperience == undefined ? "" : "Id :"} </b>{data.loadingExperience == undefined ? "" : val.id} <br />
+                      <b>{data.loadingExperience == undefined ? "" : "Title :"} </b>{data.loadingExperience == undefined ? "" : val.weight} <br />
+                      <b>{data.loadingExperience == undefined ? "" : "Score :"} </b>{data.loadingExperience == undefined ? "" : (val.group == null ? "null" : val.group)} <br /><br />
+                      {/* <b>{data.loadingExperience == undefined ? "" : "Score Display Mode :"} </b>{data.loadingExperience == undefined ? "" : data.lighthouseResult.audits[val.value].scoreDisplayMode} <br /> */}
+                      {/* <b>{data.loadingExperience == undefined ? "" : "Display Value :"} </b>{data.loadingExperience == undefined ? "" : data.lighthouseResult.audits[val.value].displayValue == null ? "null" : data.lighthouseResult.audits[val.value].displayValue} <br /> */}
+                    </div>
+                  </div>
+                ))}
+
+              </Typography>
+            </CardContent>
+
+          </Card>
+        </div>
+
+        <div style={{ padding: "22px" }}>
+          <Card style={{ marginLeft: "80px", marginTop: "42px", border: "0.5px solid lightgrey", margin: "auto" }} sx={{ maxWidth: 1195 }}>
+            {data.lighthouseResult == undefined ? "loading.." : console.log("audits", data.lighthouseResult.audits)}
+            <CardContent>
+              <Typography style={{ textAlign: "center", marginBottom: "18px" }} gutterBottom variant="h5" component="div">
+                Category Groups
+              </Typography>
+              {/* <h2 style={{ marginLeft: "30px" }}>{data.loadingExperience == undefined ? "Loading..." : "Performance"}</h2> */}
+              <Typography variant="body2" color="text.secondary">
+                {/* <b>Id: </b> {data.loadingExperience == undefined ? "loading..." : data.lighthouseResult.categories.performance.id} <br /> */}
+                {/* <b>Title: </b>{data.loadingExperience == undefined ? "loading..." : data.lighthouseResult.categories.performance.title} <br /> */}
+                {/* <b>Score: </b>{data.loadingExperience == undefined ? "loading..." : data.lighthouseResult.categories.performance.score} <br /> <br /> */}
+
+                {/* <h3>{data.loadingExperience == undefined ? "Loading..." : "Audit Refs:..."}</h3> */}
+
+                {data.lighthouseResult == undefined ? "loading..." : cg.map((val) => (
+                  <div>
+                    {/* {console.log(val.value)} */}
+                    <b style={{ marginRight: "8px" }}>  </b>              <h3 style={{ textTransform: "uppercase", marginTop: "-21px", marginLeft: "24px" }}>{data.loadingExperience == undefined ? "Loading..." : val.value}</h3>
+                    <div style={{ marginLeft: "12px" }}>
+                      {/* <b style={{ textTransform: "uppercase" }}><h4>{data.loadingExperience == undefined ? "" : val.value}</h4></b> */}
+                      <b>{data.loadingExperience == undefined ? "" : "Title :"} </b>{data.loadingExperience == undefined ? "" : data.lighthouseResult.categoryGroups[val.value].title} <br />
+                      {/* <b>{data.loadingExperience == undefined ? "" : "Description :"} </b>{data.loadingExperience == undefined ? "" : val.description} <br /> */}
+                      <b>{data.loadingExperience == undefined ? "" : "Description :"} </b>{data.loadingExperience == undefined ? "" : (data.lighthouseResult.categoryGroups[val.value].description == null ? "null" : data.lighthouseResult.categoryGroups[val.value].description)} <br /><br />
+                      {/* <b>{data.loadingExperience == undefined ? "" : "Score Display Mode :"} </b>{data.loadingExperience == undefined ? "" : data.lighthouseResult.audits[val.value].scoreDisplayMode} <br /> */}
+                      {/* <b>{data.loadingExperience == undefined ? "" : "Display Value :"} </b>{data.loadingExperience == undefined ? "" : data.lighthouseResult.audits[val.value].displayValue == null ? "null" : data.lighthouseResult.audits[val.value].displayValue} <br /> */}
+                    </div>
+                  </div>
+                ))}
+
+              </Typography>
+            </CardContent>
+
+          </Card>
+        </div>
+      </div>);
+    }
+  }
   const apiGet = () => {
+    Setprogress(true);
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
@@ -87,6 +263,8 @@ const Intial = () => {
     // })
     console.log(data);
     // await callit();
+    // Setprogress(false);
+
 
   }
   const callit = () => {
@@ -94,7 +272,7 @@ const Intial = () => {
       <div>
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
-            <TableHead> Loading Experience
+            <TableHead>
               <TableRow>
                 <TableCell>Metrics</TableCell>
                 <TableCell align="right">percentile</TableCell>
@@ -109,17 +287,17 @@ const Intial = () => {
               {/* {console.log("cnbn", JSON.stringify(data.loadingExperience), "gyu", data.loadingExperience.metrics["CUMULATIVE_LAYOUT_SHIFT_SCORE"].percentile)} */}
               {rows.map((d) => (
                 <TableRow
-                  key={d.name}
+                  // key={d.main}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
                   <TableCell component="th" scope="row">
 
-                    {d.name}
+                    {/* {d.main} */}
                   </TableCell>
-                  <TableCell align="right">{datam.loadingExperience.metrics["CUMULATIVE_LAYOUT_SHIFT_SCORE"].percentile}</TableCell>
-                  <TableCell align="right">{datam.loadingExperience.metrics["CUMULATIVE_LAYOUT_SHIFT_SCORE"].distributions[0].min}, {data.loadingExperience.metrics[d.name].distributions[1].min},{data.loadingExperience.metrics[d.name].distributions[2].min}</TableCell>
-                  <TableCell align="right">{datam.loadingExperience.metrics["CUMULATIVE_LAYOUT_SHIFT_SCORE"].distributions[0].max}, {data.loadingExperience.metrics[d.name].distributions[1].max}</TableCell>
-                  <TableCell align="right">{datam.loadingExperience.metrics["CUMULATIVE_LAYOUT_SHIFT_SCORE"].distributions[0].proportion}, {data.loadingExperience.metrics[d.name].distributions[1].proportion} , {data.loadingExperience.metrics[d.name].distributions[2].proportion}</TableCell>
+                  <TableCell align="right">{datam.loadingExperience.metrics[d.name].percentile}</TableCell>
+                  <TableCell align="right">{datam.loadingExperience.metrics[d.name].distributions[0].min}, {data.loadingExperience.metrics[d.name].distributions[1].min},{data.loadingExperience.metrics[d.name].distributions[2].min}</TableCell>
+                  <TableCell align="right">{datam.loadingExperience.metrics[d.name].distributions[0].max}, {data.loadingExperience.metrics[d.name].distributions[1].max}</TableCell>
+                  <TableCell align="right">{datam.loadingExperience.metrics[d.name].distributions[0].proportion}, {data.loadingExperience.metrics[d.name].distributions[1].proportion} , {data.loadingExperience.metrics[d.name].distributions[2].proportion}</TableCell>
                   {/* <TableCell align="right">{row.fat}</TableCell>
             <TableCell align="right">{row.carbs}</TableCell>
             <TableCell align="right">{row.protein}</TableCell> */}
@@ -139,184 +317,63 @@ const Intial = () => {
         <React.Fragment>
           <CardContent>
             <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-              Link of the Website
+
+
+
+
+
+
             </Typography>
-            {/* <input type="url" onChange={setUpQuery}/>  */}
-            <TextField id="outlined-basic" type="url" onChange={setUpQuery} label="Link" variant="outlined" />
-            <Stack spacing={2} direction="row">
+            <Paper style={{ margin: "auto", marginTop: "12px" }}
+              component="form"
+              sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
+            >
+              {/* <input type="url" onChange={setUpQuery} /> */}
+              <InputBase id="outlined-basic" type="url" onChange={setUpQuery} label="Link" variant="outlined"
+                sx={{ ml: 1, flex: 1 }}
+                placeholder="Search Website"
+              // inputProps={{ 'aria-label': 'search website' }}
+              />
+              <IconButton variant="contained" onClick={apiGet} sx={{ p: '10px' }} aria-label="search">
+                <SearchIcon />
+              </IconButton>
+
+            </Paper>
+            {/* <input type="url" onChange={setUpQuery} /> */}
+            {/* <TextField id="outlined-basic" type="url" onChange={setUpQuery} label="Link" variant="outlined" /> */}
+            {/* <Stack spacing={2} direction="row">
               <Button variant="contained" onClick={apiGet} sx={{ my: '10px' }} >Submit</Button>
-            </Stack ></CardContent>
+            </Stack > */}
+          </CardContent>
         </React.Fragment>
       </Box>
 
 
       <React.Fragment>
         <CardContent>
-          <Typography variant="h5" component="div" justifyContent="center">
+          {/* <Typography variant="h5" component="div" justifyContent="center">
             Highlights
-          </Typography>
+          </Typography> */}
 
-          <Typography variant="body2">
+          {/* <Typography variant="body2">
             Search Result For: {data.id}
             <br />
-            {/* Category:{data.loadingExperience.category} */}
-          </Typography>
+            {/* Category:{data.loadingExperience.category} 
+          </Typography> */}
 
 
         </CardContent>
       </React.Fragment>
-      <Typography variant="h5" component="div" justifyContent="center">
+      {/* <Typography variant="h5" component="div" justifyContent="center">
         Complete Info about the website is as follow:
-      </Typography>
+      </Typography> */}
       {/* <p>{data.id}</p> */}
 
-      <div >
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
-            <TableHead> <h2>Loading Experience</h2>
-              <TableRow>
-                <TableCell style={{ textAlign: "center" }}>Metrics</TableCell>
-                <TableCell style={{ textAlign: "center" }} align="right">percentile</TableCell>
-                <TableCell style={{ textAlign: "center" }} align="right">min</TableCell>
-                <TableCell style={{ textAlign: "center" }} align="right">max</TableCell>
-                <TableCell style={{ textAlign: "center" }} align="right">proportion</TableCell>
+      {progress !== true ? "" :
+        <BBox />
 
-                {/* <TableCell align="right">Protein&nbsp;(g)</TableCell> */}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {console.log("cnbn", JSON.stringify(data.loadingExperience))}
-              {rows.map((d) => (
-                <TableRow
-                  key={d.name}
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                >
-                  <TableCell component="th" scope="row">
-
-                    {d.name}
-                  </TableCell>
-                  <TableCell style={{ textAlign: "center" }} align="right">{JSON.stringify(data.loadingExperience) == undefined ? "loading" : JSON.stringify(data.loadingExperience.metrics[d.name].percentile)}</TableCell>
-                  <TableCell style={{ textAlign: "center" }} align="right">{JSON.stringify(data.loadingExperience) == undefined ? "loading" : JSON.stringify(data.loadingExperience.metrics[d.name].distributions[0].min)}, {JSON.stringify(data.loadingExperience) == undefined ? "" : JSON.stringify(data.loadingExperience.metrics[d.name].distributions[1].min)},{JSON.stringify(data.loadingExperience) == undefined ? "" : JSON.stringify(data.loadingExperience.metrics[d.name].distributions[2].min)}</TableCell>
-                  <TableCell style={{ textAlign: "center" }} align="right">{JSON.stringify(data.loadingExperience) == undefined ? "loading" : JSON.stringify(data.loadingExperience.metrics[d.name].distributions[0].max)}, {JSON.stringify(data.loadingExperience) == undefined ? "" : JSON.stringify(data.loadingExperience.metrics[d.name].distributions[1].max)}</TableCell>
-                  <TableCell style={{ textAlign: "center" }} align="right">{JSON.stringify(data.loadingExperience) == undefined ? "loading" : JSON.stringify(data.loadingExperience.metrics[d.name].distributions[0].proportion)},<br />{JSON.stringify(data.loadingExperience) == undefined ? "" : JSON.stringify(data.loadingExperience.metrics[d.name].distributions[1].proportion)} ,<br />{JSON.stringify(data.loadingExperience) == undefined ? "" : JSON.stringify(data.loadingExperience.metrics[d.name].distributions[2].proportion)}</TableCell>
-                  {/* <TableCell align="right">{datam.loadingExperience.metrics["CUMULATIVE_LAYOUT_SHIFT_SCORE"].distributions[0].max}, {data.loadingExperience.metrics[d.name].distributions[1].max}</TableCell> */}
-                  {/* <TableCell align="right">{datam.loadingExperience.metrics["CUMULATIVE_LAYOUT_SHIFT_SCORE"].distributions[0].proportion}, {data.loadingExperience.metrics[d.name].distributions[1].proportion} , {data.loadingExperience.metrics[d.name].distributions[2].proportion}</TableCell> */}
-                  {/* <TableCell align="right">{row.fat}</TableCell>
-        <TableCell align="right">{row.carbs}</TableCell>
-        <TableCell align="right">{row.protein}</TableCell> */}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </div>
-
-
-
-
-      <div>
-        <Card style={{ marginLeft: "80px", marginTop: "22px" }} sx={{ maxWidth: 822 }}>
-          {data.lighthouseResult == undefined ? "loading.." : console.log("audits", data.lighthouseResult.audits)}
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
-              Light House Result
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              <b>UserAgent: </b> {data.loadingExperience == undefined ? "loading..." : data.lighthouseResult.userAgent} <br />
-              <b>fetch time: </b>{data.loadingExperience == undefined ? "loading..." : data.lighthouseResult.fetchTime} <br />
-              <b>Warnings: </b>{data.loadingExperience == undefined ? "loading..." : data.lighthouseResult.runWarnings} <br />
-
-              <h2>{data.loadingExperience == undefined ? "Loading..." : "Audits"}</h2>
-
-              {content.map((val) => (
-                <div>
-                  <b style={{ textTransform: "uppercase" }}><h4>{data.loadingExperience == undefined ? "" : val.value}</h4></b>
-                  <b>{data.loadingExperience == undefined ? "" : "Title :"} </b>{data.loadingExperience == undefined ? "" : data.lighthouseResult.audits[val.value].title} <br />
-                  <b>{data.loadingExperience == undefined ? "" : "Description :"} </b>{data.loadingExperience == undefined ? "" : data.lighthouseResult.audits[val.value].description} <br />
-                  <b>{data.loadingExperience == undefined ? "" : "Score :"} </b>{data.loadingExperience == undefined ? "" : (data.lighthouseResult.audits[val.value].score == null ? "null" : data.lighthouseResult.audits[val.value].score)} <br />
-                  <b>{data.loadingExperience == undefined ? "" : "Score Display Mode :"} </b>{data.loadingExperience == undefined ? "" : data.lighthouseResult.audits[val.value].scoreDisplayMode} <br />
-                  <b>{data.loadingExperience == undefined ? "" : "Display Value :"} </b>{data.loadingExperience == undefined ? "" : data.lighthouseResult.audits[val.value].displayValue == null ? "null" : data.lighthouseResult.audits[val.value].displayValue} <br />
-                </div>
-              ))}
-
-            </Typography>
-          </CardContent>
-
-        </Card>
-      </div>
-
-      <div>
-        <Card style={{ marginLeft: "80px", marginTop: "22px" }} sx={{ maxWidth: 822 }}>
-          {data.lighthouseResult == undefined ? "loading.." : console.log("audits", data.lighthouseResult.audits)}
-          <CardContent>
-            <Typography style={{ textAlign: "center" }} gutterBottom variant="h5" component="div">
-              Categories
-            </Typography>
-            <h2 style={{ marginLeft: "30px" }}>{data.loadingExperience == undefined ? "Loading..." : "Performance"}</h2>
-            <Typography variant="body2" color="text.secondary">
-              <b>Id: </b> {data.loadingExperience == undefined ? "loading..." : data.lighthouseResult.categories.performance.id} <br />
-              <b>Title: </b>{data.loadingExperience == undefined ? "loading..." : data.lighthouseResult.categories.performance.title} <br />
-              <b>Score: </b>{data.loadingExperience == undefined ? "loading..." : data.lighthouseResult.categories.performance.score} <br /> <br />
-
-              <h3>{data.loadingExperience == undefined ? "Loading..." : "Audit"}</h3>
-
-              {data.lighthouseResult == undefined ? "loading..." : data.lighthouseResult.categories.performance.auditRefs.map((val) => (
-                <div>
-                  <b>{++count}</b>
-                  <div style={{ marginLeft: "12px" }}>
-                    {/* <b style={{ textTransform: "uppercase" }}><h4>{data.loadingExperience == undefined ? "" : val.value}</h4></b> */}
-                    <b>{data.loadingExperience == undefined ? "" : "Id :"} </b>{data.loadingExperience == undefined ? "" : val.id} <br />
-                    <b>{data.loadingExperience == undefined ? "" : "Title :"} </b>{data.loadingExperience == undefined ? "" : val.weight} <br />
-                    <b>{data.loadingExperience == undefined ? "" : "Score :"} </b>{data.loadingExperience == undefined ? "" : (val.group == null ? "null" : val.group)} <br /><br />
-                    {/* <b>{data.loadingExperience == undefined ? "" : "Score Display Mode :"} </b>{data.loadingExperience == undefined ? "" : data.lighthouseResult.audits[val.value].scoreDisplayMode} <br /> */}
-                    {/* <b>{data.loadingExperience == undefined ? "" : "Display Value :"} </b>{data.loadingExperience == undefined ? "" : data.lighthouseResult.audits[val.value].displayValue == null ? "null" : data.lighthouseResult.audits[val.value].displayValue} <br /> */}
-                  </div>
-                </div>
-              ))}
-
-            </Typography>
-          </CardContent>
-
-        </Card>
-      </div>
-
-      <div>
-        <Card style={{ marginLeft: "80px", marginTop: "22px" }} sx={{ maxWidth: 822 }}>
-          {data.lighthouseResult == undefined ? "loading.." : console.log("audits", data.lighthouseResult.audits)}
-          <CardContent>
-            <Typography style={{ textAlign: "center", marginBottom: "18px" }} gutterBottom variant="h5" component="div">
-              Category Groups
-            </Typography>
-            {/* <h2 style={{ marginLeft: "30px" }}>{data.loadingExperience == undefined ? "Loading..." : "Performance"}</h2> */}
-            <Typography variant="body2" color="text.secondary">
-              {/* <b>Id: </b> {data.loadingExperience == undefined ? "loading..." : data.lighthouseResult.categories.performance.id} <br /> */}
-              {/* <b>Title: </b>{data.loadingExperience == undefined ? "loading..." : data.lighthouseResult.categories.performance.title} <br /> */}
-              {/* <b>Score: </b>{data.loadingExperience == undefined ? "loading..." : data.lighthouseResult.categories.performance.score} <br /> <br /> */}
-
-              {/* <h3>{data.loadingExperience == undefined ? "Loading..." : "Audit Refs:..."}</h3> */}
-
-              {data.lighthouseResult == undefined ? "loading..." : cg.map((val) => (
-                <div>
-                  {/* {console.log(val.value)} */}
-                  <b style={{ marginRight: "8px" }}>  {++count2}.</b>              <h3 style={{ textTransform: "uppercase", marginTop: "-21px", marginLeft: "24px" }}>{data.loadingExperience == undefined ? "Loading..." : val.value}</h3>
-                  <div style={{ marginLeft: "12px" }}>
-                    {/* <b style={{ textTransform: "uppercase" }}><h4>{data.loadingExperience == undefined ? "" : val.value}</h4></b> */}
-                    <b>{data.loadingExperience == undefined ? "" : "Title :"} </b>{data.loadingExperience == undefined ? "" : data.lighthouseResult.categoryGroups[val.value].title} <br />
-                    {/* <b>{data.loadingExperience == undefined ? "" : "Description :"} </b>{data.loadingExperience == undefined ? "" : val.description} <br /> */}
-                    <b>{data.loadingExperience == undefined ? "" : "Description :"} </b>{data.loadingExperience == undefined ? "" : (data.lighthouseResult.categoryGroups[val.value].description == null ? "null" : data.lighthouseResult.categoryGroups[val.value].description)} <br /><br />
-                    {/* <b>{data.loadingExperience == undefined ? "" : "Score Display Mode :"} </b>{data.loadingExperience == undefined ? "" : data.lighthouseResult.audits[val.value].scoreDisplayMode} <br /> */}
-                    {/* <b>{data.loadingExperience == undefined ? "" : "Display Value :"} </b>{data.loadingExperience == undefined ? "" : data.lighthouseResult.audits[val.value].displayValue == null ? "null" : data.lighthouseResult.audits[val.value].displayValue} <br /> */}
-                  </div>
-                </div>
-              ))}
-
-            </Typography>
-          </CardContent>
-
-        </Card>
-      </div>
-
-      <pre>{JSON.stringify(data, null, 2)}</pre>
+      }
+      {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
     </>
   );
 }
