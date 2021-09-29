@@ -20,7 +20,12 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { color } from "@mui/system";
 import CircularProgress from '@mui/material/CircularProgress';
-
+import {
+  Chart,
+  PieSeries,
+  Title,
+} from '@devexpress/dx-react-chart-material-ui';
+import { Animation } from '@devexpress/dx-react-chart';
 import InputBase from '@mui/material/InputBase';
 // import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
@@ -28,10 +33,20 @@ import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 // import DirectionsIcon from '@mui/icons-material/Directions';
 
+// const Data = [
+//   // { country: 'Russia', area: 12 },
+//   // { country: 'Canada', area: 7 },
+//   // { country: 'USA', area: 7 },
+//   // { country: 'China', area: 7 },
+//   // { country: 'Brazil', area: 6 },
+//   // { country: 'Australia', area: 5 },
+//   // { country: 'India', area: 2 },
+//   // { country: 'Others', area: 55 },
+//   createD("")
+// ];
 
-
-function createData(name, main) {
-  return { name, main };
+function createData(name, main, m) {
+  return { name, main, m };
 }
 function createData2(value) {
   return { value };
@@ -42,12 +57,7 @@ function cgs(value) {
 
 // var count = 0;
 // var count2 = 0;
-const rows = [
-  createData('CUMULATIVE_LAYOUT_SHIFT_SCORE', "Cumulative Layout Shift Score"),
-  createData('FIRST_CONTENTFUL_PAINT_MS', "First Contentful Paint MS"),
-  createData('FIRST_INPUT_DELAY_MS', "First Input Delay MS"),
-  createData('LARGEST_CONTENTFUL_PAINT_MS', "Largest Contentful Paint MS"),
-];
+
 const content = [
   createData2("mainthread-work-breakdown"), createData2("performance-budget"), createData2("uses-responsive-images"), createData2("offscreen-images"), createData2("screenshot-thumbnails"), createData2("total-blocking-time"), createData2("font-display"), createData2("diagnostics"), createData2("interactive"), createData2("uses-rel-preload"), createData2("resource-summary"), createData2("critical-request-chains"), createData2("timing-budget"), createData2("uses-passive-event-listeners"), createData2("third-party-facades"),
   createData2("long-tasks"), createData2("total-byte-weight"), createData2("unused-css-rules"), createData2("lcp-lazy-loaded"), createData2("redirects"), createData2("third-party-summary"), createData2("speed-index"), createData2("unminified-javascript"), createData2("user-timings"), createData2("unsized-images"), createData2("modern-image-formats"), createData2("main-thread-tasks"), createData2("uses-long-cache-ttl"), createData2("network-rtt"), createData2("full-page-screenshot"), createData2("efficient-animated-content"), createData2("uses-optimized-images"),
@@ -67,8 +77,23 @@ const cg = [
 // var progress = null;
 
 const Intial = () => {
+  const [val1, Setv1] = useState();
+  const [val2, Setv2] = useState();
+  const [val3, Setv3] = useState();
+  const [val4, Setv4] = useState();
+  // var val1 = 1;
+  // var val2 = 5;
+  // var val3 = 1;
+  // var val4 = 1;
+  const rows = [
+    createData('CUMULATIVE_LAYOUT_SHIFT_SCORE', "Cumulative Layout Shift Score", val1),
+    createData('FIRST_CONTENTFUL_PAINT_MS', "First Contentful Paint MS", val2),
+    createData('FIRST_INPUT_DELAY_MS', "First Input Delay MS", val3),
+    createData('LARGEST_CONTENTFUL_PAINT_MS', "Largest Contentful Paint MS", val4),
+  ];
   const [url, setUrl] = useState(null) // for url
   const [progress, Setprogress] = useState("false");
+  const [pie, Setpie] = useState([]);
   function setUpQuery(val) { //function creates the full url for api call
     const api = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';//First part of the url
     const parameters = {
@@ -79,6 +104,15 @@ const Intial = () => {
       query += `${key}=${parameters[key]}`;
     }
     setUrl(query);
+  }
+  const maxo = () => {
+    Setpie(data.loadingExperience.metrics);
+    console.log("rohit", data.loadingExperience);
+    Setv1(data.loadingExperience.metrics["CUMULATIVE_LAYOUT_SHIFT_SCORE"].distributions[0].proportion);
+    Setv2(data.loadingExperience.metrics["FIRST_CONTENTFUL_PAINT_MS"].distributions[0].proportion);
+    Setv3(data.loadingExperience.metrics["FIRST_INPUT_DELAY_MS"].distributions[0].proportion);
+    Setv4(data.loadingExperience.metrics["LARGEST_CONTENTFUL_PAINT_MS"].distributions[0].proportion);
+
   }
   var datam = [];
   const [data, setdata] = useState([]);//set data from api
@@ -92,11 +126,32 @@ const Intial = () => {
       </div>);
     }
     else {
+      maxo();
       return (<div>
+        <div>{console.log("pie", pie)}
+
+          {console.log("datam value", datam)}
+
+          {console.log("values", val1, val2, val3, val4, rows[0].m, rows[1].m)}
+          <Paper>
+            <Chart
+              data={rows}
+            >
+              <PieSeries
+                valueField="m"
+                argumentField="name"
+              />
+              <Title
+                text="Proportion"
+              />
+              <Animation />
+            </Chart>
+          </Paper>
+        </div>
 
 
 
-        <div >
+        <div style={{ marginTop: "22px" }}>
           <TableContainer style={{ width: "1200px", margin: "auto", border: "0.1px solid lightgrey" }} component={Paper}>
             <Table sx={{ minWidth: 100 }} aria-label="simple table">
               <TableHead>
@@ -112,6 +167,7 @@ const Intial = () => {
               </TableHead>
               <TableBody>
                 {console.log("cnbn", JSON.stringify(data.loadingExperience))}
+                {console.log("pie", pie)}
                 {rows.map((d) => (
                   <TableRow
                     key={d.name}
@@ -253,6 +309,7 @@ const Intial = () => {
 
         console.log("data", data, "json", json);
 
+
       })
     console.log("data", data);
     // .then(() => {
@@ -264,6 +321,8 @@ const Intial = () => {
     console.log(data);
     // await callit();
     // Setprogress(false);
+    console.log("pie", pie);
+    { data.loadingExperience == undefined ? "" : maxo() }
 
 
   }
@@ -311,7 +370,7 @@ const Intial = () => {
 
 
   return (
-    <>
+    <div>
 
       <Box sx={{ minWidth: 275 }}>
         <React.Fragment>
@@ -374,7 +433,7 @@ const Intial = () => {
 
       }
       {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
-    </>
+    </div>
   );
 }
 export default Intial;
