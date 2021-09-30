@@ -8,12 +8,12 @@ import MenuIcon from '@mui/icons-material/Menu';
 
 export default function DenseAppBar() {
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box style={{ marginLeft: "-8px", width: "101%", marginTop: "-8px" }} sx={{ flexGrow: 0 }}>
       <AppBar position="static">
         <Toolbar variant="dense">
-          
+
           <Typography variant="h6" color="inherit" component="div">
-            LightHouse Website info
+            Website info
           </Typography>
         </Toolbar>
       </AppBar>

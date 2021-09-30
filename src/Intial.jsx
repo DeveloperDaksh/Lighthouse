@@ -77,19 +77,19 @@ const cg = [
 // var progress = null;
 
 const Intial = () => {
-  const [val1, Setv1] = useState();
-  const [val2, Setv2] = useState();
-  const [val3, Setv3] = useState();
-  const [val4, Setv4] = useState();
+  const [val1, Setv1] = useState(0);
+  const [val2, Setv2] = useState(0);
+  const [val3, Setv3] = useState(0);
+  const [val4, Setv4] = useState(0);
   // var val1 = 1;
   // var val2 = 5;
   // var val3 = 1;
   // var val4 = 1;
   const rows = [
-    createData('CUMULATIVE_LAYOUT_SHIFT_SCORE', "Cumulative Layout Shift Score", val1),
-    createData('FIRST_CONTENTFUL_PAINT_MS', "First Contentful Paint MS", val2),
-    createData('FIRST_INPUT_DELAY_MS', "First Input Delay MS", val3),
-    createData('LARGEST_CONTENTFUL_PAINT_MS', "Largest Contentful Paint MS", val4),
+    createData('CUMULATIVE_LAYOUT_SHIFT_SCORE', "Cumulative Layout Shift Score", (val1 * 10).toFixed(2)),
+    createData('FIRST_CONTENTFUL_PAINT_MS', "First Contentful Paint MS", (val2 * 10).toFixed(2)),
+    createData('FIRST_INPUT_DELAY_MS', "First Input Delay MS", (val3 * 10).toFixed(2)),
+    createData('LARGEST_CONTENTFUL_PAINT_MS', "Largest Contentful Paint MS", (val4 * 10).toFixed(2)),
   ];
   const [url, setUrl] = useState(null) // for url
   const [progress, Setprogress] = useState("false");
@@ -108,13 +108,31 @@ const Intial = () => {
   const maxo = () => {
     Setpie(data.loadingExperience.metrics);
     console.log("rohit", data.loadingExperience);
-    Setv1(data.loadingExperience.metrics["CUMULATIVE_LAYOUT_SHIFT_SCORE"].distributions[0].proportion);
+    Setv1((data.loadingExperience.metrics["CUMULATIVE_LAYOUT_SHIFT_SCORE"].distributions[0].proportion));
     Setv2(data.loadingExperience.metrics["FIRST_CONTENTFUL_PAINT_MS"].distributions[0].proportion);
     Setv3(data.loadingExperience.metrics["FIRST_INPUT_DELAY_MS"].distributions[0].proportion);
     Setv4(data.loadingExperience.metrics["LARGEST_CONTENTFUL_PAINT_MS"].distributions[0].proportion);
 
   }
   var datam = [];
+  const grade = (val) => {
+    console.log(("We never called"));
+    if (val > 9) {
+      return "A";
+    }
+    else if (val > 8) {
+      return "B+";
+    }
+    else if (val > 7) {
+      return "B";
+    }
+    else if (val > 6) {
+      return "C";
+    }
+    else {
+      return "D";
+    }
+  }
   const [data, setdata] = useState([]);//set data from api
   const BBox = () => {
     if (data.loadingExperience == undefined) {
@@ -127,28 +145,63 @@ const Intial = () => {
     }
     else {
       maxo();
-      return (<div>
-        <div>{console.log("pie", pie)}
+      return (<div style={{ backgroundColor: "white" }}>
+        <div style={{ display: "flex", justifyContent: "space-evenly" }}>
+          <div style={{ width: "550px", border: "1px solid white", boxShadow: "none" }}>
 
-          {console.log("datam value", datam)}
 
-          {console.log("values", val1, val2, val3, val4, rows[0].m, rows[1].m)}
-          <Paper>
-            <Chart
-              data={rows}
-            >
-              <PieSeries
-                valueField="m"
-                argumentField="name"
-              />
-              <Title
-                text="Proportion"
-              />
-              <Animation />
-            </Chart>
-          </Paper>
+            {console.log("pie", pie)}
+
+            {console.log("datam value", datam)}
+
+            {console.log("values", val1, val2, val3, val4, rows[0].m, rows[1].m)}
+            <Paper style={{ backgroundColor: "white", border: "1px solid white", boxShadow: "none" }}>
+              <Chart
+                data={rows}
+              >
+                <PieSeries
+                  valueField="m"
+                  argumentField="name"
+                />
+                <Title
+                  text="Proportion"
+                />
+                <Animation />
+              </Chart>
+            </Paper>
+          </div>
+          <div style={{ marginTop: "150px" }}>
+            <TableContainer component={Paper}>
+              <Table sx={{ minWidth: 300 }} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    {/* <TableCell>Dessert (100g serving)</TableCell>
+                  <TableCell align="right">Calories</TableCell>
+                  <TableCell align="right">Fat&nbsp;(g)</TableCell>
+                  <TableCell align="right">Carbs&nbsp;(g)</TableCell>
+                  <TableCell align="right">Protein&nbsp;(g)</TableCell> */}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {rows.map((row) => (
+                    <TableRow
+                      key={row.name}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    >
+                      <TableCell component="th" scope="row">
+                        {row.main}
+                      </TableCell>
+                      <TableCell align="right"> {grade(row.m)} , {row.m}</TableCell>
+                      {/* <TableCell align="right">{row.fat}</TableCell>
+                    <TableCell align="right">{row.carbs}</TableCell>
+                    <TableCell align="right">{row.protein}</TableCell> */}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </div>
         </div>
-
 
 
         <div style={{ marginTop: "22px" }}>
@@ -180,7 +233,7 @@ const Intial = () => {
                     <TableCell style={{ textAlign: "center" }} align="right">{JSON.stringify(data.loadingExperience) == undefined ? "loading" : JSON.stringify(data.loadingExperience.metrics[d.name].percentile)}</TableCell>
                     <TableCell style={{ textAlign: "center" }} align="right">{JSON.stringify(data.loadingExperience) == undefined ? "loading" : JSON.stringify(data.loadingExperience.metrics[d.name].distributions[0].min)}, {JSON.stringify(data.loadingExperience) == undefined ? "" : JSON.stringify(data.loadingExperience.metrics[d.name].distributions[1].min)},{JSON.stringify(data.loadingExperience) == undefined ? "" : JSON.stringify(data.loadingExperience.metrics[d.name].distributions[2].min)}</TableCell>
                     <TableCell style={{ textAlign: "center" }} align="right">{JSON.stringify(data.loadingExperience) == undefined ? "loading" : JSON.stringify(data.loadingExperience.metrics[d.name].distributions[0].max)}, {JSON.stringify(data.loadingExperience) == undefined ? "" : JSON.stringify(data.loadingExperience.metrics[d.name].distributions[1].max)}</TableCell>
-                    <TableCell style={{ textAlign: "center" }} align="right">{JSON.stringify(data.loadingExperience) == undefined ? "loading" : JSON.stringify(data.loadingExperience.metrics[d.name].distributions[0].proportion)},<br />{JSON.stringify(data.loadingExperience) == undefined ? "" : JSON.stringify(data.loadingExperience.metrics[d.name].distributions[1].proportion)} ,<br />{JSON.stringify(data.loadingExperience) == undefined ? "" : JSON.stringify(data.loadingExperience.metrics[d.name].distributions[2].proportion)}</TableCell>
+                    <TableCell style={{ textAlign: "center" }} align="right">{JSON.stringify(data.loadingExperience) == undefined ? "loading" : ((data.loadingExperience.metrics[d.name].distributions[0].proportion) * 10).toFixed(2)},<br />{JSON.stringify(data.loadingExperience) == undefined ? "" : ((data.loadingExperience.metrics[d.name].distributions[1].proportion) * 10).toFixed(2)} ,<br />{JSON.stringify(data.loadingExperience) == undefined ? "" : ((data.loadingExperience.metrics[d.name].distributions[2].proportion) * 10).toFixed(2)}</TableCell>
                     {/* <TableCell align="right">{datam.loadingExperience.metrics["CUMULATIVE_LAYOUT_SHIFT_SCORE"].distributions[0].max}, {data.loadingExperience.metrics[d.name].distributions[1].max}</TableCell> */}
                     {/* <TableCell align="right">{datam.loadingExperience.metrics["CUMULATIVE_LAYOUT_SHIFT_SCORE"].distributions[0].proportion}, {data.loadingExperience.metrics[d.name].distributions[1].proportion} , {data.loadingExperience.metrics[d.name].distributions[2].proportion}</TableCell> */}
                     {/* <TableCell align="right">{row.fat}</TableCell>
